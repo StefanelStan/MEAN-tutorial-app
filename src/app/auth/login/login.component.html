@@ -1,0 +1,22 @@
+<!-- basic form with user and password. We will copy-paste the form-create and modify/strip the ng models from the component.ts -->
+<!-- Add FormsModule to app.module.ts. We removed it when we changed the template to reactive for post create -->
+<mat-card>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
+    <!-- remove the form Group [formGroup]="form" as we're not reactive. We go template style Remove onSavePost() -->
+    <form (submit)="onLogin(loginForm)" #loginForm="ngForm" *ngIf="!isLoading">  <!--name the form #loginForm and pass it to submit function -->
+        <mat-form-field>
+            <!-- matInput type is email not text. Remove formControlName (not reactive form) -->
+            <!-- name="email" ngModel will make this accessible from controller via form.email and #emailInput will make locally accessible mat-error ngIf -->
+            <input matInput name="email" ngModel type="email" placeholder="E-Mail" #emailInput="ngModel" required email> <!-- required email are 2 validators -->
+            <!-- we need to change the mat-error condition to other kind of validation -->
+            <mat-error *ngIf="emailInput.invalid">Please enter a valid email</mat-error>
+        </mat-form-field>
+        <!-- remove the button and the image picker/viewer divs -->
+        <mat-form-field>
+            <!-- change text area to input type password. Remove formControlName as wee (we do template not reactive) -->
+            <input matInput name="password" ngModel type="password" placeholder="Password" #passwordInput="ngModel" required>
+            <mat-error *ngIf="passwordInput.invalid">Please enter your password</mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Login</button>
+    </form>
+</mat-card>
