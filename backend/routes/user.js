@@ -38,7 +38,7 @@ router.post("/login", async(request, response, next) => {
                                 'secret_should_be_longer',
                                 { expiresIn: '1h'}
         );
-        return response.status(200).json({token});
+        return response.status(200).json({token, expiresIn: 3600});
     } catch (error) {
         return response.status(500).json({error});
     }

@@ -2,14 +2,17 @@
     <span><a routerLink='/'> Messages</a></span>
     <span class="spacer"></span>
     <ul>
-        <li>
+        <li *ngIf="userIsAuthenticated">
             <a mat-button routerLink='/create' routerLinkActive="mat-accent"> New Post</a>
         </li>
-        <li>
+        <li *ngIf="!userIsAuthenticated">
             <a mat-button routerLink='/login' routerLinkActive="mat-accent"> Login</a>
         </li>
-        <li>
+        <li *ngIf="!userIsAuthenticated">
             <a mat-button routerLink='/signup' routerLinkActive="mat-accent"> Signup</a>
+        </li>
+        <li *ngIf="userIsAuthenticated">
+            <button mat-button (click)="onLogout()"> Logout</button> <!-- button as we want this to have an action not a link-->
         </li>
     </ul>
 </mat-toolbar>
