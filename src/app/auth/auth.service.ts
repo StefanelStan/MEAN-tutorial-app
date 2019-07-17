@@ -45,12 +45,37 @@ export class AuthService {
                 this.token = response.token;
                 if (this.token) {
                     const expiredInDuration = response.expiresIn;
-                    this.tokenTimer = setTimeout(() => { this.logout(); }, expiredInDuration * 1000); // set timer to variable to logout
+                    this.setTokenRefreshTimer(expiredInDuration); // set timer to variable to logout
                     this.isAuthenticated = true; // set this so other late-at-party components can read the status
                     this.authStatusListener.next(true); // we tell the observable that we changed to true and every1 listening will know
+                    const now = new Date();
+                    const expiration = new Date(now.getTime() + expiredInDuration * 1000);
+                    this.saveAuthData(this.token, expiration);
+                    console.log(expiration);
                     this.router.navigate(['/']); // if we have good token navigate to homepage
                 }
             });
+    }
+
+    private setTokenRefreshTimer(expiredInDuration: number) {
+        console.log('Setting timer to refresh token :' + expiredInDuration);
+        this.tokenTimer = setTimeout(() => { this.logout(); }, expiredInDuration * 1000);
+    }
+    // this method should be run first ..the best place would be in app.component.ts start up
+    authAuthUser() {
+        const authData = this.getAuthData();
+        if (!authData) { // after log out + refresh, there will not be any localStorage so authData.expirationDate will fail
+            return;
+        }
+        const now = new Date();
+        const expiresIn = authData.expirationDate.getTime() - now.getTime();
+        if (expiresIn > 0) {
+            this.token = authData.token;
+            this.isAuthenticated =  true;
+            this.setTokenRefreshTimer(expiresIn / 1000);
+            this.authStatusListener.next(true);
+
+        }
     }
 
     logout() {
@@ -58,6 +83,26 @@ export class AuthService {
         this.isAuthenticated = false;
         this.authStatusListener.next(false);
         clearTimeout(this.tokenTimer);
+        this.clearAuthData();
         this.router.navigate(['/']);
+    }
+
+    private saveAuthData(token: string, expirationDate: Date) { // called after login
+        localStorage.setItem('token', token);
+        localStorage.setItem('expiration', expirationDate.toISOString()); // isoString stores it in a default-time way GMT + 0;
+    }
+
+    private clearAuthData() { // called after logout
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiration');
+    }
+
+    private getAuthData() { // to try to see if there is a token saved or not
+        const token = localStorage.getItem('token');
+        const expirationDate = localStorage.getItem('expiration');
+        if (token && expirationDate) {
+            return { token, expirationDate: new Date (expirationDate) };
+        }
+        return;
     }
 }
