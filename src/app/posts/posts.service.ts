@@ -26,7 +26,8 @@ export class PostsService {
                             title: post.title,
                             content: post.content,
                             id: post._id,
-                            imagePath: post.imagePath
+                            imagePath: post.imagePath,
+                            creator: post.creator
                         };
                     }),
                     maxPosts: postData.maxPosts // we also return the max posts in case they get updated by user.
@@ -43,7 +44,8 @@ export class PostsService {
         // return {...this.posts.find(post => post.id === id )};
         // we want to return a real post from DB but this is async so we will return an
         // observable and we will subscribe from the post-create component
-        return this.http.get<{_id: string, title: string, content: string, imagePath: string}>('http://localhost:3000/api/posts/' + id);
+        return this.http
+        .get<{_id: string, title: string, content: string, imagePath: string, creator: string}>('http://localhost:3000/api/posts/' + id);
     }
 
     getPost(id: string) {
@@ -87,7 +89,7 @@ export class PostsService {
             postData.append('content', content);
             postData.append('image', image, title);
         } else { // I have a string andf send a json object
-            postData = { id, title, content, imagePath: image };
+            postData = { id, title, content, imagePath: image, creator: null };
         }
         this.http
             .put('http://localhost:3000/api/posts/' + id, postData)

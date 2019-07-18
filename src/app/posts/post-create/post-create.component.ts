@@ -41,7 +41,13 @@ export class PostCreateComponent implements OnInit {
                     // hide spinner here as we have the data
                     this.isLoading = false;
                     console.log(postData);
-                    this.post = { id: postData._id, title: postData.title, content: postData.content, imagePath: postData.imagePath };
+                    this.post = {
+                        id: postData._id,
+                        title: postData.title,
+                        content: postData.content,
+                        imagePath: postData.imagePath,
+                        creator: postData.creator
+                    };
                     console.log(this.post);
                     // set the form value in case we have a loaded post, including the imagePath
                     this.form.setValue({ title: this.post.title, content: this.post.content, image: this.post.imagePath });

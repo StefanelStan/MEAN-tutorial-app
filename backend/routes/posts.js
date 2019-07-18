@@ -35,10 +35,10 @@ router.post('', checkAuth, multer({storage: storage}).single("image"), async(req
     const post = new PostModel({
         title: request.body.title,
         content: request.body.content,
-        imagePath: `${url}/images/${request.file.filename}`
+        imagePath: `${url}/images/${request.file.filename}`,
+        creator: request.userData.userId
     });
-    console.log(request.body);
-    console.log(post);
+    //return console.log(request.userData);
     post.save().then((createdPost) => {
         return response.status(201).json({
             message: 'Post added successfully',
@@ -65,11 +65,15 @@ router.put('/:id', checkAuth, multer({storage: storage}).single("image"), (req, 
         _id: req.params.id,
         title: req.body.title,
         content: req.body.content,
-        imagePath: imagePath
+        imagePath: imagePath,
+        creator: request.userData.userId
     });
-    PostModel.updateOne({_id: req.params.id}, updatedPost).then((result) => {
-        console.log(result);
-        return resp.status(200).json({message: 'Post updated successfully'});
+    PostModel.updateOne({_id: req.params.id, creator: req.userData.userId}, updatedPost).then((result) => {
+        if (result.nModified > 0) {
+            return resp.status(200).json({message: 'Post updated successfully'});
+        } else {
+            return resp.status(401).json({message: 'Unathorized post access!'});
+        }
     });
 });
 
@@ -120,10 +124,15 @@ router.get('/:id', (req, resp, next) => {
 router.delete('/:id', checkAuth, (req, resp, next) => {
     let id = req.params.id;
     console.log('About to delete post with id :' + id);
-    PostModel.deleteOne({_id: id})
+    console.log (id + "/" + req.userData.userId);
+    PostModel.deleteOne({_id: id, creator: req.userData.userId})
         .then((result) => {
-            //console.log(result);
-            resp.status(200).json({message: `Post ${id} deleted successfully`});
+            console.log(result);
+            if (result.n > 0) {
+                return resp.status(200).json({message: `Post ${id} deleted successfully`});
+            } else {
+                return resp.status(401).json({message: 'Unathorized delete post access!'});
+            }
         })
         .catch((error) => {
             console.log('Unable to delete a post due to ' + error.message);
