@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
     MatInputModule, MatCardModule, MatButtonModule, MatToolbarModule, MatExpansionModule,
-    MatProgressSpinnerModule, MatPaginatorModule
+    MatProgressSpinnerModule, MatPaginatorModule, MatDialogModule
 } from '@angular/material';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -16,6 +16,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
+import { ErrorInterceptor } from './error-interceptor';
+import { ErrorComponent } from './error/error.component';
 
 @NgModule({
     declarations: [
@@ -24,7 +26,8 @@ import { AuthInterceptor } from './auth/auth-interceptor';
         HeaderComponent,
         PostListComponent,
         LoginComponent,
-        SignupComponent
+        SignupComponent,
+        ErrorComponent
     ],
     imports: [
         BrowserModule,
@@ -39,10 +42,14 @@ import { AuthInterceptor } from './auth/auth-interceptor';
         MatExpansionModule,
         MatProgressSpinnerModule,
         MatPaginatorModule,
+        MatDialogModule,
         HttpClientModule
     ],
-    providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
+    providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],
     // multi = true -> we tell Angular not to override others but to use this one as well
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    entryComponents: [ErrorComponent]
 })
 export class AppModule { }

@@ -36,9 +36,15 @@ export class AuthService {
     createUser(email: string, password: string) {
         const authData: AuthData = {email, password};
         this.httpClient.post('http://localhost:3000/api/user/signup', authData)
-            .subscribe((response) => {
-                console.log(response);
-            });
+            .subscribe(
+                (response) => {
+                    console.log(response);
+                    this.router.navigate(['/']); // to to main page as we do in login ..reroute the user to main page
+                },
+                (error) => { // if we catch the error here the loader / component would not know and w8 forever. So we push notification
+                    console.log(error);
+                    this.authStatusListener.next(false);
+                });
     }
 
     loginUser(email: string, password: string) {
@@ -59,6 +65,9 @@ export class AuthService {
                     console.log(expiration);
                     this.router.navigate(['/']); // if we have good token navigate to homepage
                 }
+            }, (error) => {
+                console.log(error);
+                this.authStatusListener.next(false);
             });
     }
 

@@ -5,6 +5,8 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { PostsService } from '../posts.service';
 import { Post } from '../post.model';
 import { mimeType } from './mime-type.validator';
+import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
 @Component({
     selector: 'app-post-create', // for the ng tag from app.component.html
     templateUrl: './post-create.component.html', // where to html to go
@@ -20,11 +22,15 @@ export class PostCreateComponent implements OnInit {
     post: Post;
     form: FormGroup;
     imagePreview: string;
+    private authSubscription: Subscription;
 
-    constructor(public postsService: PostsService, public route: ActivatedRoute) {
+    constructor(public postsService: PostsService, public route: ActivatedRoute, public authService: AuthService) {
     }
 
     ngOnInit(): void {
+        this.authSubscription =  this.authService.getAuthStatusListener().subscribe((status: boolean) => {
+            this.isLoading = false;
+        });
         this.form = new FormGroup({
             title: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
             content: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
