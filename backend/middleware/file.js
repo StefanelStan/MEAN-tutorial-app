@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
         if (isValid) { // if isValid was left null, error will not be set to null and callback will blow with error
             error = null;
         }
-        callback(error, 'backend/images');
+        callback(error, 'images');
     },
     filename : (req, file, callback) => {
         const name = file.originalname.toLowerCase().split(' ').join('-'); // this will remove the extension

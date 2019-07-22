@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/auth/auth.service';
     templateUrl: './post-create.component.html', // where to html to go
     styleUrls: ['./post-create.component.css']
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
 
     enteredTitle = '';
     enteredContent = '';
@@ -90,6 +90,10 @@ export class PostCreateComponent implements OnInit {
         };
         reader.readAsDataURL(file);
 
+    }
+
+    ngOnDestroy(): void {
+        this.authSubscription.unsubscribe();
     }
 }
 

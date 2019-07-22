@@ -8,7 +8,7 @@ const userRoutes = require('./routes/user').router;
 
 const app = express();
 
-mongoose.connect("mongodb+srv://stefanmeanmongorw:Aw1E11E24jc8vWBW@cluster0-czxby.mongodb.net/node-angular?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://stefanmeanmongorw:" + process.env.ATLAS_PWD + "@cluster0-czxby.mongodb.net/node-angular?retryWrites=true&w=majority")
     .then(() => {
         console.log('Connected to MongoDB Cluster');
     })
@@ -18,7 +18,7 @@ mongoose.connect("mongodb+srv://stefanmeanmongorw:Aw1E11E24jc8vWBW@cluster0-czxb
 
 app.use(bodyParser.json());
 // will forward all /images req to backend/images. We indicate this folder with path package of express
-app.use("/images", express.static(path.join("backend/images")));
+app.use("/images", express.static(path.join("images")));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*'); //allow CORS

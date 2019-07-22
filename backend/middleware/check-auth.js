@@ -8,7 +8,7 @@ var checkAuth = async(request, response, next) => {
     try {
         const encodedToken = request.headers.authorization.split(' ')[1]; // Bearer token
         // jwt takes token and the secret string that we used to generate the token
-        const decodedToken = jwt.verify(encodedToken, 'secret_should_be_longer');
+        const decodedToken = jwt.verify(encodedToken, process.env.JWT_KEY);
         // Express will add the fields to request where they will be accessible from anywhere next() goes
         request.userData = { email: decodedToken.email, userId: decodedToken.userId };
         next();

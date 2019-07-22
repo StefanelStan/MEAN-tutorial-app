@@ -5,6 +5,10 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
+import { environment } from '../../environments/environment';
+
+const BACKEND_URL = environment.API_URL + '/posts/';
+
 @Injectable({ providedIn: 'root' })
 export class PostsService {
     private posts: Post[] = [];
@@ -16,7 +20,7 @@ export class PostsService {
     getPosts(postsPerPage: number, currentPage: number) {
         // return [...this.posts];
         const queryParams = `?pageSize=${postsPerPage}&page=${currentPage}`;
-        return this.http.get<{message: string, posts: any, maxPosts: number }>('http://localhost:3000/api/posts' + queryParams)
+        return this.http.get<{message: string, posts: any, maxPosts: number }>(BACKEND_URL + queryParams)
           // posts: any type because it's no longer of Posts[] due to _id instead if id
             .pipe(map((postData) => {
                 console.log(postData.maxPosts);
@@ -45,7 +49,7 @@ export class PostsService {
         // we want to return a real post from DB but this is async so we will return an
         // observable and we will subscribe from the post-create component
         return this.http
-        .get<{_id: string, title: string, content: string, imagePath: string, creator: string}>('http://localhost:3000/api/posts/' + id);
+        .get<{_id: string, title: string, content: string, imagePath: string, creator: string}>(BACKEND_URL + id);
     }
 
     getPost(id: string) {
@@ -66,7 +70,7 @@ export class PostsService {
 
         this.http
             // .post<{ message: string, postId: string }>('http://localhost:3000/api/posts', post)
-            .post<{ message: string, post: Post }>('http://localhost:3000/api/posts', postData)
+            .post<{ message: string, post: Post }>(BACKEND_URL, postData)
             // angular will detect postData and set headers and body automatically
             .subscribe((responseData) => {
 /* Not needed as page nagivation will run ngOnInit and fetch posts by itself
@@ -92,7 +96,7 @@ export class PostsService {
             postData = { id, title, content, imagePath: image, creator: null };
         }
         this.http
-            .put('http://localhost:3000/api/posts/' + id, postData)
+            .put(BACKEND_URL + id, postData)
             .subscribe((responseData: Post) => {
                 // console.log(responseData.message); don't just log the response but update in the local copy of posts
 /* Not needed as page nagivation will run ngOnInit and fetch posts by itself
@@ -107,7 +111,7 @@ export class PostsService {
     }
 
     deletePost(postId: string) {
-        return this.http.delete('http://localhost:3000/api/posts/' + postId);
+        return this.http.delete(BACKEND_URL + postId);
             // .subscribe(() => {
             //     console.log('Deleted!');
             //     const updatedPosts = this.posts.filter(post => post.id !== postId );

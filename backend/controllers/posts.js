@@ -38,12 +38,17 @@ var editPost = async (req, resp, next) => {
         title: req.body.title,
         content: req.body.content,
         imagePath: imagePath,
-        creator: request.userData.userId
+        creator: req.userData.userId
     });
     try {
         const result = await PostModel.updateOne({_id: req.params.id, creator: req.userData.userId}, updatedPost);
+        console.log(updatedPost);
+        console.log(result);
         if (result.nModified > 0) {
             return resp.status(200).json({message: 'Post updated successfully'});
+        }
+        else if (result.n > 0) {
+            return resp.status(401).json({message: 'Post identical. Nothing was updated!'});
         } else {
             return resp.status(401).json({message: 'Unathorized post access!'});
         }
